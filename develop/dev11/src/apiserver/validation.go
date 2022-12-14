@@ -1,0 +1,28 @@
+package apiserver
+
+import (
+	"net/url"
+	"strings"
+	"fmt"
+)
+
+func validateURLValues(values url.Values, dict ...string) (map[string]string, error) {
+	kvalue := make(map[string]string)
+	missedValues := make([]string, 0)
+
+	for _, v := range dict {
+		value := values.Get(v)
+		if value == "" {
+			missedValues = append(missedValues, v)
+		}
+
+		kvalue[v] = value
+	}
+
+	if len(missedValues) != 0 {
+		valstring := strings.Join(missedValues, ", ")
+		return map[string]string{}, fmt.Errorf("not enough parameters: %s", valstring)
+	}
+
+	return kvalue, nil
+}
